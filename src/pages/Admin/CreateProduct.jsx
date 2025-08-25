@@ -29,22 +29,22 @@ const CreateProduct = () => {
     setMessage('');
 
     try {
-      // Validar que se haya seleccionado una imagen
+      // 1. Valida que se haya seleccionado una imagen
       if (!imagen) {
         setMessage('Por favor, selecciona una imagen.');
         setLoading(false);
         return;
       }
 
-      // Crear un objeto FormData para enviar datos y la imagen
+      // 2. Crea un objeto FormData para enviar datos y la imagen
       const form = new FormData();
       for (const key in formData) {
         form.append(key, formData[key]);
       }
       form.append('imagen', imagen);
 
-      // Enviar la solicitud POST a tu API
-      const response = await axios.post('http://localhost:5000/api/products', form, {
+      // 3. Envía la solicitud POST a tu API
+      const response = await axios.post('http://localhost:5000/products', form, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -52,6 +52,8 @@ const CreateProduct = () => {
 
       console.log('Producto creado:', response.data);
       setMessage('Producto creado exitosamente.');
+      
+      // 4. Limpia el formulario después de una subida exitosa
       setFormData({
         nombre: '',
         precio: '',
@@ -60,7 +62,6 @@ const CreateProduct = () => {
         stock: ''
       });
       setImagen(null);
-      // Opcional: limpiar el input de archivo después de subir
       if (document.getElementById('imagen')) {
         document.getElementById('imagen').value = '';
       }
