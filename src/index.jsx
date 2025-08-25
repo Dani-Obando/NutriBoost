@@ -10,9 +10,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
       <CartProvider>
-        <AppRoutes /> // Use AppRoutes here to render your router
+        <AppRoutes />
       </CartProvider>
-    </AuthProvider>
-     {" "}
+    </AuthProvider>{" "}
   </React.StrictMode>
 );
