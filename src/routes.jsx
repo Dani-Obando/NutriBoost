@@ -11,6 +11,9 @@ import Orders from "./pages/Orders.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
+// Importa el nuevo componente de creación de productos
+import CreateProduct from "./pages/Admin/CreateProduct.jsx";
+
 // Create a layout component to share Navbar and Footer
 const Layout = () => {
   return (
@@ -64,6 +67,11 @@ const router = createBrowserRouter([
       {
         path: "/orders",
         element: <Orders />,
+      },
+      // Nueva ruta para la creación de productos
+      {
+        path: "/admin/products/create",
+        element: <CreateProduct />,
       },
     ],
   },

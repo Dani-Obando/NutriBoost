@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
@@ -6,76 +7,43 @@ function Navbar() {
   const { user, logout } = useContext(AuthContext);
 
   return (
-    <nav className="bg-primary text-white p-4 shadow-lg sticky top-0 z-50">
-      <div className="container flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold tracking-tight">
-          NutriBoost
+    <nav className="bg-white p-4 shadow-md sticky top-0 z-50">
+      <div className="container mx-auto flex justify-between items-center space-x-4">
+        {/* Logo */}
+        <Link to="/" className="text-xl font-bold tracking-tight text-gray-800">
+          NUTRIBOOST
         </Link>
-        <ul className="flex space-x-6 items-center">
-          <li>
-            <Link to="/" className="hover:text-gray-200 transition">
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link to="/products" className="hover:text-gray-200 transition">
-              Productos
-            </Link>
-          </li>
-          <li>
-            <Link to="/about" className="hover:text-gray-200 transition">
-              Acerca de
-            </Link>
-          </li>
-          <li>
-            <Link to="/contact" className="hover:text-gray-200 transition">
-              Contacto
-            </Link>
-          </li>
+
+        {/* Search Bar */}
+        <div className="flex-grow flex justify-center">
+          <input
+            type="text"
+            placeholder="Buscar..."
+            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Auth Buttons */}
+        <div className="flex space-x-2 items-center">
           {user ? (
+            // ... (Tu código para usuario autenticado)
             <>
-              <li>
-                <Link to="/profile" className="hover:text-gray-200 transition">
-                  Perfil
-                </Link>
-              </li>
-              <li>
-                <Link to="/cart" className="hover:text-gray-200 transition">
-                  Carrito
-                </Link>
-              </li>
-              <li>
-                <Link to="/orders" className="hover:text-gray-200 transition">
-                  Órdenes
-                </Link>
-              </li>
-              <li>
-                <button
-                  onClick={logout}
-                  className="hover:text-gray-200 transition"
-                >
-                  Cerrar Sesión
-                </button>
-              </li>
+              <Link to="/cart" className="text-gray-600 hover:text-gray-900 transition">Carrito</Link>
+              <button onClick={logout} className="text-gray-600 hover:text-gray-900 transition">
+                Cerrar Sesión
+              </button>
             </>
           ) : (
             <>
-              <li>
-                <Link to="/login" className="hover:text-gray-200 transition">
-                  Iniciar Sesión
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/register"
-                  className="bg-secondary text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-                >
-                  Registrarse
-                </Link>
-              </li>
+              <Link to="/login" className="text-gray-600 hover:text-gray-900 transition">
+                Sign In
+              </Link>
+              <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">
+                Register
+              </Link>
             </>
           )}
-        </ul>
+        </div>
       </div>
     </nav>
   );
