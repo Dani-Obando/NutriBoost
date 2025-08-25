@@ -1,5 +1,3 @@
-// api/axios.js
-
 import axios from "axios";
 
 // Instancias de Axios
@@ -21,28 +19,22 @@ function getCookie(name) {
   return null;
 }
 
-// Interceptor para la API de seguridad
-securityAPI.interceptors.request.use((config) => {
-  // Solo adjunta el token para métodos que no sean GET
-  if (["post", "put", "delete"].includes(config.method)) {
-    const csrfToken = getCookie("XSRF-TOKEN-SECURITY");
-    if (csrfToken) {
-      config.headers["X-XSRF-TOKEN"] = csrfToken;
+// Función que aplica el interceptor a una instancia de Axios
+const attachCSRF = (apiInstance, cookieName) => {
+  apiInstance.interceptors.request.use((config) => {
+    // Solo adjunta el token para métodos que modifican datos
+    if (["post", "put", "delete"].includes(config.method)) {
+      const csrfToken = getCookie(cookieName);
+      if (csrfToken) {
+        config.headers["X-XSRF-TOKEN"] = csrfToken;
+      }
     }
-  }
-  return config;
-});
+    return config;
+  });
+};
 
-// Interceptor para la API de la tienda
-shopAPI.interceptors.request.use((config) => {
-  // Solo adjunta el token para métodos que no sean GET
-  if (["post", "put", "delete"].includes(config.method)) {
-    const csrfToken = getCookie("XSRF-TOKEN-SHOP");
-    if (csrfToken) {
-      config.headers["X-XSRF-TOKEN"] = csrfToken;
-    }
-  }
-  return config;
-});
+// Adjunta los interceptores a cada API con el nombre de cookie correcto
+attachCSRF(securityAPI, "XSRF-TOKEN");
+attachCSRF(shopAPI, "XSRF-TOKEN");
 
 export { securityAPI, shopAPI };

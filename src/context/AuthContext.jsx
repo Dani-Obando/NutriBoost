@@ -1,13 +1,13 @@
-// context/AuthContext.jsx
-
 import { createContext, useEffect, useState } from "react";
-import { securityAPI, shopAPI } from "../api/axios";
+import { securityAPI } from "../api/axios";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [csrfLoaded, setCsrfLoaded] = useState(false);
 
+  // Define la función logout aquí
   const logout = async () => {
     try {
       await securityAPI.post("/auth/logout");
@@ -17,11 +17,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const login = async (email, password) => {
+    try {
+      // Intenta obtener el token antes de cada login si aún no está cargado
+      if (!csrfLoaded) {
+        console.warn("CSRF token not loaded. Fetching now.");
+        await securityAPI.get("/auth/csrf-token");
+        setCsrfLoaded(true);
+      }
+      const res = await securityAPI.post("/auth/login", { email, password });
+      setUser(res.data.data.user);
+      return res;
+    } catch (err) {
+      console.error("Error al iniciar sesión", err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
-    // Corregido: solo se necesita un token CSRF de la API de seguridad
     const initCSRF = async () => {
       try {
         await securityAPI.get("/auth/csrf-token");
+        setCsrfLoaded(true);
         console.log("CSRF token inicializado correctamente");
       } catch (err) {
         console.error("Error inicializando CSRF", err);
@@ -43,8 +60,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
-            {children}   {" "}
+    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+      {children}
     </AuthContext.Provider>
   );
 };
