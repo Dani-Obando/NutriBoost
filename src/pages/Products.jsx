@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { shopAPI } from "../api/axios";
+import { AuthContext } from "../context/AuthContext.jsx";
+import ProductDetailsModal from "../components/ProductDetailsModal.jsx";
+import LoginModal from "../components/LoginModal.jsx";
 
 const PromotionBanner = () => (
   <div className="w-full overflow-hidden">
@@ -15,6 +18,10 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -41,6 +48,21 @@ function Products() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
+  };
+
+  const openDetailsModal = (id) => {
+    setSelectedProductId(id);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleAddToCart = () => {
+    if (!user) {
+      setIsDetailsModalOpen(false);
+      setIsLoginModalOpen(true);
+    } else {
+      // Lógica para añadir al carrito si el usuario está logueado
+      console.log(`Producto con ID ${selectedProductId} añadido al carrito`);
+    }
   };
 
   if (loading) {
@@ -81,10 +103,30 @@ function Products() {
                   {formatPrice(p.precio)}
                 </p>
               </div>
+              <div className="p-4 bg-gray-50 border-t border-gray-200 text-center">
+                <button
+                  onClick={() => openDetailsModal(p._id)}
+                  className="w-full inline-block bg-cyan-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-cyan-600 transition-colors"
+                >
+                  Ver detalles
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
+      
+      {isDetailsModalOpen && selectedProductId && (
+        <ProductDetailsModal
+          productId={selectedProductId}
+          onClose={() => setIsDetailsModalOpen(false)}
+          onAddToCart={handleAddToCart}
+        />
+      )}
+
+      {isLoginModalOpen && (
+        <LoginModal onClose={() => setIsLoginModalOpen(false)} />
+      )}
     </div>
   );
 }

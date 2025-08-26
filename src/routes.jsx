@@ -1,5 +1,4 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import Home from "./pages/Home.jsx";
+import { createBrowserRouter, RouterProvider, Outlet, Navigate } from "react-router-dom";
 import About from "./pages/About.jsx";
 import Contact from "./pages/Contact.jsx";
 import Login from "./pages/Login.jsx";
@@ -10,17 +9,15 @@ import Cart from "./pages/Cart.jsx";
 import Orders from "./pages/Orders.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
-
-// Importa el nuevo componente de creación de productos
 import CreateProduct from "./pages/Admin/CreateProduct.jsx";
+import ProductDetail from "./pages/ProductDetail.jsx";
 
-// Create a layout component to share Navbar and Footer
 const Layout = () => {
   return (
     <>
       <Navbar />
       <main className="min-h-screen">
-        <Outlet /> {/* This renders the current route's element */}
+        <Outlet />
       </main>
       <Footer />
     </>
@@ -34,7 +31,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: <Navigate to="/products" replace />,
       },
       {
         path: "/about",
@@ -57,6 +54,10 @@ const router = createBrowserRouter([
         element: <Products />,
       },
       {
+        path: "/products/:id",
+        element: <ProductDetail />,
+      },
+      {
         path: "/profile",
         element: <Profile />,
       },
@@ -68,7 +69,6 @@ const router = createBrowserRouter([
         path: "/orders",
         element: <Orders />,
       },
-      // Nueva ruta para la creación de productos
       {
         path: "/admin/products/create",
         element: <CreateProduct />,
