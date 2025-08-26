@@ -1,66 +1,79 @@
 import { createContext, useEffect, useState } from "react";
-import { securityAPI } from "../api/axios";
+import { securityAPI, setupCsrfInterceptor } from "../api/axios";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [csrfLoaded, setCsrfLoaded] = useState(false);
+  const [csrfToken, setCsrfToken] = useState(null);
+  const [csrfLoading, setCsrfLoading] = useState(false);
 
-  // Define la función logout aquí
-  const logout = async () => {
+  // Inicializar el token CSRF
+  const initCSRF = async () => {
+    if (csrfLoading || csrfToken) {
+      return;
+    }
+    setCsrfLoading(true);
     try {
-      await securityAPI.post("/auth/logout");
-      setUser(null);
+      const response = await securityAPI.get("/auth/csrf-token");
+      setCsrfToken(response.data["XSRF-TOKEN"]);
     } catch (err) {
-      console.error("Error al cerrar sesión", err);
+      setCsrfToken(null);
+    } finally {
+      setCsrfLoading(false);
     }
   };
 
+  // Configurar el interceptor de CSRF
+  useEffect(() => {
+    setupCsrfInterceptor(() => csrfToken);
+  }, [csrfToken]);
+
+  // Login
   const login = async (email, password) => {
     try {
-      // Intenta obtener el token antes de cada login si aún no está cargado
-      if (!csrfLoaded) {
-        console.warn("CSRF token not loaded. Fetching now.");
-        await securityAPI.get("/auth/csrf-token");
-        setCsrfLoaded(true);
+      if (!csrfToken) {
+        await initCSRF();
       }
       const res = await securityAPI.post("/auth/login", { email, password });
       setUser(res.data.data.user);
       return res;
     } catch (err) {
-      console.error("Error al iniciar sesión", err);
       throw err;
     }
   };
 
-  useEffect(() => {
-    const initCSRF = async () => {
-      try {
-        await securityAPI.get("/auth/csrf-token");
-        setCsrfLoaded(true);
-        console.log("CSRF token inicializado correctamente");
-      } catch (err) {
-        console.error("Error inicializando CSRF", err);
+  // Logout
+  const logout = async () => {
+    try {
+      if (!csrfToken) {
+        await initCSRF();
       }
-    };
-    initCSRF();
+      await securityAPI.post("/auth/logout");
+      setUser(null);
+      setCsrfToken(null);
+    } catch (err) {
+      throw err;
+    }
+  };
 
-    const fetchUser = async () => {
+  // Inicializar CSRF y obtener perfil al montar el componente
+  useEffect(() => {
+    const initialize = async () => {
       try {
+        await initCSRF();
         const res = await securityAPI.get("/users/profile");
         setUser(res.data.data.user);
       } catch (err) {
-        console.error("Error al obtener perfil", err);
         setUser(null);
       }
     };
 
-    fetchUser();
+    initialize();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, csrfToken }}>
       {children}
     </AuthContext.Provider>
   );

@@ -13,12 +13,40 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
+
+    // Validaciones en el frontend
+    if (!email.trim()) {
+      setError("El correo es obligatorio");
+      return;
+    }
+    if (!password.trim()) {
+      setError("La contraseña es obligatoria");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("El correo no es válido");
+      return;
+    }
+
     try {
       const res = await securityAPI.post("/auth/login", { email, password });
       setUser(res.data.data.user);
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Error en el login");
+      const errorMessage = err.response?.data?.message;
+      if (errorMessage === "El correo y la contraseña son obligatorios") {
+        setError("El correo y la contraseña son obligatorios");
+      } else if (errorMessage === "El correo no es válido") {
+        setError("El correo no es válido");
+      } else if (errorMessage === "El correo no está registrado") {
+        setError("El correo no está registrado");
+      } else if (errorMessage === "La contraseña es incorrecta") {
+        setError("Correo o contraseña incorrectos");
+      } else if (err.response?.status === 403) {
+        setError("Error de validación CSRF. Por favor, intenta de nuevo");
+      } else {
+        setError("Error al iniciar sesión. Intenta de nuevo más tarde");
+      }
     }
   };
 
