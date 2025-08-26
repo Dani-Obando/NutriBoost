@@ -23,9 +23,21 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = (id) => {
     setCart((prev) => prev.filter((item) => item._id !== id));
   };
+  
+  // Nueva función para actualizar la cantidad de un producto
+  const updateQuantity = (id, newQuantity) => {
+    if (newQuantity < 1) {
+        return; // No permitir cantidades menores a 1
+    }
+    setCart((prev) => 
+        prev.map((item) => 
+            item._id === id ? { ...item, quantity: newQuantity } : item
+        )
+    );
+  };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, setCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, setCart }}>
       {children}
     </CartContext.Provider>
   );

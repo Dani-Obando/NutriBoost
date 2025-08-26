@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { shopAPI } from "../api/axios";
 import { AuthContext } from "../context/AuthContext.jsx";
+import { CartContext } from "../context/CartContext.jsx";
 import ProductDetailsModal from "../components/ProductDetailsModal.jsx";
 import LoginModal from "../components/LoginModal.jsx";
 
@@ -22,6 +23,7 @@ function Products() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const { user } = useContext(AuthContext);
+  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -55,13 +57,14 @@ function Products() {
     setIsDetailsModalOpen(true);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (product, quantity) => {
     if (!user) {
       setIsDetailsModalOpen(false);
       setIsLoginModalOpen(true);
     } else {
-      // Lógica para añadir al carrito si el usuario está logueado
-      console.log(`Producto con ID ${selectedProductId} añadido al carrito`);
+      addToCart(product, quantity);
+      setIsDetailsModalOpen(false);
+      alert(`Se agregaron ${quantity} unidades de ${product.nombre} al carrito.`);
     }
   };
 
@@ -82,10 +85,11 @@ function Products() {
       <PromotionBanner />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="text-3xl font-bold text-gray-800 mb-8">Productos Destacados</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((p) => (
-            <div
+            <button
               key={p._id}
+              onClick={() => openDetailsModal(p._id)}
               className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
             >
               <div className="p-4 flex-grow flex flex-col">
@@ -96,6 +100,8 @@ function Products() {
                     className="max-h-full max-w-full object-contain"
                   />
                 </div>
+              </div>
+              <div className="p-4 pt-0 w-full text-left">
                 <h3 className="font-bold text-gray-800 text-lg mb-1">
                   {p.nombre}
                 </h3>
@@ -103,15 +109,7 @@ function Products() {
                   {formatPrice(p.precio)}
                 </p>
               </div>
-              <div className="p-4 bg-gray-50 border-t border-gray-200 text-center">
-                <button
-                  onClick={() => openDetailsModal(p._id)}
-                  className="w-full inline-block bg-cyan-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-cyan-600 transition-colors"
-                >
-                  Ver detalles
-                </button>
-              </div>
-            </div>
+            </button>
           ))}
         </div>
       </div>
