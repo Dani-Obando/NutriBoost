@@ -3,7 +3,7 @@ import axios from "axios";
 // Instancias de Axios
 const securityAPI = axios.create({
   baseURL: "http://localhost:5002",
-  withCredentials: true,
+  withCredentials: true, // muy importante para enviar cookies
 });
 
 const shopAPI = axios.create({
@@ -24,11 +24,13 @@ const attachCSRF = (apiInstance, cookieName) => {
   apiInstance.interceptors.request.use((config) => {
     // Solo adjunta el token para métodos que modifican datos
     if (["post", "put", "delete"].includes(config.method)) {
-      const csrfToken = getCookie(cookieName);
-      if (csrfToken) {
-        config.headers["X-XSRF-TOKEN"] = csrfToken;
-      }
-    }
+  const csrfToken = getCookie("XSRF-TOKEN"); // cookie que te da la API
+  if (csrfToken) {
+    // 👇 usa el mismo nombre que espera csurf
+    config.headers["X-XSRF-TOKEN"] = csrfToken;
+  }
+}
+
     return config;
   });
 };

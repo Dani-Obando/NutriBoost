@@ -1,22 +1,21 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { securityAPI } from "../api/axios";
 import { AuthContext } from "../context/AuthContext.jsx";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const { setUser } = useContext(AuthContext);
+
+  const { login } = useContext(AuthContext); // usamos login del contexto
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
     try {
-      const res = await securityAPI.post("/auth/login", { email, password });
-      setUser(res.data.data.user);
-      navigate("/");
+      await login(email, password); // login centralizado
+      navigate("/"); // redirige al home
     } catch (err) {
       setError(err.response?.data?.message || "Error en el login");
     }
