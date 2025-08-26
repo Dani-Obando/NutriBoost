@@ -1,12 +1,20 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { shopAPI } from "../api/axios";
-import { CartContext } from "../context/CartContext.jsx";
+
+const PromotionBanner = () => (
+  <div className="w-full overflow-hidden">
+    <img
+      src="https://m.media-amazon.com/images/S/aplus-media-library-service-media/f30f460a-f014-434c-9c13-e6f1057a26cd.__CR0,0,970,300_PT0_SX970_V1___.png"
+      alt="Banner Promocional C4"
+      className="w-full max-h-[900px] object-contain mx-auto"
+    />
+  </div>
+);
 
 function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -16,13 +24,9 @@ function Products() {
           setProducts(res.data.items);
         } else {
           setError("Respuesta de la API inesperada.");
-          console.error("Respuesta de la API inesperada:", res.data);
         }
       } catch (err) {
-        console.error("Error al obtener los productos:", err);
-        setError(
-          "Error al cargar los productos. Por favor, inténtalo de nuevo más tarde."
-        );
+        setError("Error al cargar los productos. Por favor, inténtalo de nuevo.");
       } finally {
         setLoading(false);
       }
@@ -30,56 +34,52 @@ function Products() {
     fetchProducts();
   }, []);
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("es-CR", {
+      style: "currency",
+      currency: "CRC",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p>Cargando productos...</p>
-      </div>
-    );
+    return <div className="text-center py-12">Cargando productos...</div>;
   }
 
   if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
+    return <div className="text-center py-12 text-red-500">{error}</div>;
   }
 
   if (products.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p>No se encontraron productos.</p>
-      </div>
-    );
+    return <div className="text-center py-12">No se encontraron productos.</div>;
   }
 
   return (
-    <div className="py-12">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold mb-8">Productos</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="bg-gray-100 min-h-screen">
+      <PromotionBanner />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h2 className="text-3xl font-bold text-gray-800 mb-8">Productos Destacados</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map((p) => (
             <div
               key={p._id}
-              className="bg-white border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
+              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
             >
-              <img
-                src={`http://localhost:5000${p.imagen}`} 
-                alt={p.nombre}
-                className="w-full h-48 object-cover"
-                
-              />
-              <div className="p-4">
-                <h3 className="font-bold text-xl mb-2">{p.nombre}</h3>
-                <p className="text-gray-600 mb-2">${p.precio.toFixed(2)}</p>
-                <p className="text-gray-500 text-sm mb-4">{p.descripcion}</p>
-                <button
-                  onClick={() => addToCart(p)}
-                  className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-green-600 transition w-full"
-                >
-                  Agregar al Carrito
-                </button>
+              <div className="p-4 flex-grow flex flex-col">
+                <div className="w-full h-48 flex items-center justify-center mb-4">
+                  <img
+                    src={`http://localhost:5000${p.imagen}`}
+                    alt={p.nombre}
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+                <h3 className="font-bold text-gray-800 text-lg mb-1">
+                  {p.nombre}
+                </h3>
+                <p className="text-cyan-600 font-extrabold text-xl">
+                  {formatPrice(p.precio)}
+                </p>
               </div>
             </div>
           ))}

@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { securityAPI } from "../api/axios";
 import { AuthContext } from "../context/AuthContext.jsx";
 
@@ -51,41 +51,51 @@ function Login() {
   };
 
   return (
-    <div className="py-12">
-      <div className="container max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h2>
-        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-        <form
-          onSubmit={handleLogin}
-          className="space-y-4 bg-white p-6 rounded-lg shadow-md"
-        >
-          <div>
-            <label className="block text-sm font-medium mb-1">Correo</label>
-            <input
-              type="email"
-              placeholder="Correo"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+    <div className="bg-white flex flex-col items-center pt-12">
+      <div className="container mx-auto max-w-sm">
+        <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-200">
+          <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
+            Iniciar Sesión
+          </h2>
+          {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <input
+                type="email"
+                placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg hover:bg-cyan-600 transition-colors"
+            >
+              ENTRAR
+            </button>
+          </form>
+          <div className="flex flex-col items-center mt-6 text-sm space-y-2">
+            <a href="#" className="text-cyan-600 hover:underline">
+              ¿Olvidaste tu contraseña?
+            </a>
+            <p className="text-gray-600">
+              ¿No tienes cuenta?{" "}
+              <Link to="/register" className="text-cyan-600 hover:underline">
+                Regístrate
+              </Link>
+            </p>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Contraseña</label>
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full"
-          >
-            Ingresar
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );
