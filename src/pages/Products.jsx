@@ -12,7 +12,6 @@ function Products() {
     const fetchProducts = async () => {
       try {
         const res = await shopAPI.get("/products");
-        // CORRECCIÓN: Accede al arreglo de productos desde `res.data.items`
         if (res.data && Array.isArray(res.data.items)) {
           setProducts(res.data.items);
         } else {
@@ -66,9 +65,10 @@ function Products() {
               className="bg-white border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
             >
               <img
-                src={p.imagen}
+                src={`http://localhost:5000${p.imagen}`} 
                 alt={p.nombre}
                 className="w-full h-48 object-cover"
+                
               />
               <div className="p-4">
                 <h3 className="font-bold text-xl mb-2">{p.nombre}</h3>
