@@ -8,11 +8,12 @@ function Products() {
   const [error, setError] = useState(null);
   const { addToCart } = useContext(CartContext);
 
+  const backendURL = "http://localhost:5000"; // URL del backend
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await shopAPI.get("/products");
-        // CORRECCIÓN: Accede al arreglo de productos desde `res.data.items`
         if (res.data && Array.isArray(res.data.items)) {
           setProducts(res.data.items);
         } else {
@@ -66,7 +67,7 @@ function Products() {
               className="bg-white border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
             >
               <img
-                src={p.imagen}
+                src={`${backendURL}${p.imagen}`} // <-- Aquí está la corrección
                 alt={p.nombre}
                 className="w-full h-48 object-cover"
               />

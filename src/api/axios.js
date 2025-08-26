@@ -1,13 +1,17 @@
 import axios from "axios";
 
-// Instancias de Axios
-const securityAPI = axios.create({
-  baseURL: "http://localhost:5002",
-  withCredentials: true, // muy importante para enviar cookies
+// URL base de tu API (para las imágenes y peticiones)
+export const BASE_URL = "http://localhost:5000"; // Cambia el puerto si tu API corre en otro
+
+// Instancia de Axios para la tienda
+const shopAPI = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true, // Muy importante si envías cookies
 });
 
-const shopAPI = axios.create({
-  baseURL: "http://localhost:5000",
+// Instancia de Axios para seguridad/auth
+export const securityAPI = axios.create({
+  baseURL: "http://localhost:5002", // Tu API de seguridad
   withCredentials: true,
 });
 
@@ -22,21 +26,18 @@ function getCookie(name) {
 // Función que aplica el interceptor a una instancia de Axios
 const attachCSRF = (apiInstance, cookieName) => {
   apiInstance.interceptors.request.use((config) => {
-    // Solo adjunta el token para métodos que modifican datos
     if (["post", "put", "delete"].includes(config.method)) {
-  const csrfToken = getCookie("XSRF-TOKEN"); // cookie que te da la API
-  if (csrfToken) {
-    // 👇 usa el mismo nombre que espera csurf
-    config.headers["X-XSRF-TOKEN"] = csrfToken;
-  }
-}
-
+      const csrfToken = getCookie(cookieName);
+      if (csrfToken) {
+        config.headers["X-XSRF-TOKEN"] = csrfToken;
+      }
+    }
     return config;
   });
 };
 
-// Adjunta los interceptores a cada API con el nombre de cookie correcto
+// Adjunta interceptores CSRF
 attachCSRF(securityAPI, "XSRF-TOKEN");
 attachCSRF(shopAPI, "XSRF-TOKEN");
 
-export { securityAPI, shopAPI };
+export { shopAPI };
