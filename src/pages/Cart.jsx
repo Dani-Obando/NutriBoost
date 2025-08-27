@@ -1,13 +1,12 @@
+// src/pages/Cart.jsx
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext.jsx";
-import { shopAPI } from "../api/axios";
 
-// Costo de envío fijo
 const SHIPPING_COST = 3000;
 
 function Cart() {
-  const { cart, removeFromCart, updateQuantity, setCart } = useContext(CartContext);
+  const { cart, removeFromCart, updateQuantity } = useContext(CartContext);
   const navigate = useNavigate();
 
   const formatPrice = (price) => {
@@ -20,28 +19,10 @@ function Cart() {
   };
 
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.precio * item.quantity,
+    (sum, item) => sum + (item.precio || 0) * item.quantity,
     0
   );
   const total = subtotal + SHIPPING_COST;
-
-  const placeOrder = async () => {
-    try {
-      const detalles = cart.map((item) => ({
-        productId: item._id,
-        cantidad: item.quantity,
-        subtotal: item.precio * item.quantity,
-      }));
-      const data = { detalles, total };
-      await shopAPI.post("/orders", data);
-      alert("Orden colocada exitosamente");
-      setCart([]);
-      navigate("/orders");
-    } catch (err) {
-      console.error("Error creando orden", err);
-      alert("Error al colocar la orden");
-    }
-  };
 
   return (
     <div className="bg-gray-100 min-h-screen py-12 font-sans">
@@ -54,7 +35,6 @@ function Cart() {
             <p className="text-center text-gray-600">El carrito está vacío.</p>
           ) : (
             <div className="flex flex-col md:flex-row gap-8">
-              {/* Sección principal del carrito */}
               <div className="w-full md:w-2/3">
                 <div className="hidden md:flex text-sm text-gray-500 font-semibold border-b pb-2 mb-4">
                   <div className="w-1/2">Nombre del producto</div>
@@ -87,7 +67,6 @@ function Cart() {
                         <span className="text-gray-600 text-lg md:w-1/3 md:text-right">
                           {formatPrice(item.precio)}
                         </span>
-                        {/* Selector de cantidad editable */}
                         <div className="w-auto md:w-1/3 flex justify-center items-center gap-2">
                           <button
                             onClick={() => updateQuantity(item._id, item.quantity - 1)}
@@ -113,7 +92,6 @@ function Cart() {
                 </ul>
               </div>
 
-              {/* Sección de resumen del total */}
               <div className="w-full md:w-1/3 bg-gray-50 p-6 rounded-lg shadow-inner">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Resumen de la compra</h2>
                 <div className="space-y-2">
@@ -131,8 +109,9 @@ function Cart() {
                   </div>
                 </div>
                 <button
-                  onClick={placeOrder}
-                  className="bg-cyan-500 text-white font-semibold py-3 rounded-lg hover:bg-cyan-600 transition w-full mt-6"
+                  onClick={() => navigate('/checkout')}
+                  disabled={cart.length === 0}
+                  className="bg-cyan-500 text-white font-semibold py-3 rounded-lg hover:bg-cyan-600 transition w-full mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Proceder a comprar
                 </button>
