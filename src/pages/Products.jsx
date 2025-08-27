@@ -57,14 +57,24 @@ function Products() {
     setIsDetailsModalOpen(true);
   };
 
-  const handleAddToCart = (product, quantity) => {
+  // ✅ CORRECCIÓN APLICADA AQUÍ
+  const handleAddToCart = (productId, quantity) => {
     if (!user) {
       setIsDetailsModalOpen(false);
       setIsLoginModalOpen(true);
     } else {
-      addToCart(product, quantity);
-      setIsDetailsModalOpen(false);
-      alert(`Se agregaron ${quantity} unidades de ${product.nombre} al carrito.`);
+      // Busca el objeto completo del producto en el estado local
+      const productToAdd = products.find((p) => p._id === productId);
+
+      if (productToAdd) {
+        // Pasa el objeto completo a la función del contexto
+        addToCart(productToAdd, quantity);
+        setIsDetailsModalOpen(false);
+        alert(`Se agregaron ${quantity} unidades de ${productToAdd.nombre} al carrito.`);
+      } else {
+        console.error("No se pudo encontrar el producto para agregar al carrito.");
+        alert("Hubo un error al agregar el producto.");
+      }
     }
   };
 

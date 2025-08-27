@@ -6,6 +6,8 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
   const addToCart = (product, quantity) => {
+    // Para depurar en el futuro, puedes descomentar la siguiente línea:
+    // console.log("Añadiendo al carrito:", product);
     setCart((prev) => {
       const existing = prev.find((item) => item._id === product._id);
       if (existing) {
@@ -24,10 +26,11 @@ export const CartProvider = ({ children }) => {
     setCart((prev) => prev.filter((item) => item._id !== id));
   };
   
-  // Nueva función para actualizar la cantidad de un producto
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) {
-        return; // No permitir cantidades menores a 1
+        // En lugar de no hacer nada, podríamos eliminar el producto
+        // removeFromCart(id);
+        return; 
     }
     setCart((prev) => 
         prev.map((item) => 
