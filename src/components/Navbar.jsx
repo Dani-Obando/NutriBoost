@@ -3,42 +3,39 @@ import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
 
-function Navbar() {
+function Navbar({ setSearchTerm }) {
   const { user, logout } = useContext(AuthContext);
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
-    <nav className="bg-white p-4 shadow-md sticky top-0 z-50">
+    <nav className="bg-gray-900 p-4 shadow-lg sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center space-x-4">
-        {/* Logo */}
-        <Link to="/" className="text-xl font-bold tracking-tight text-gray-800">
+        <Link to="/" className="text-xl font-bold tracking-tight text-white">
           NUTRIBOOST
         </Link>
-
-        {/* Search Bar */}
         <div className="flex-grow flex justify-center">
           <input
             type="text"
-            placeholder="Buscar..."
-            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Buscar por nombre..."
+            className="w-full max-w-md px-4 py-2 border border-gray-600 rounded-full bg-gray-800 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            onChange={handleSearchChange}
           />
         </div>
-
-        {/* Auth Buttons */}
-        <div className="flex space-x-2 items-center">
+        <div className="flex space-x-4 items-center">
           {user ? (
-            // ... (Tu código para usuario autenticado)
             <>
-              <Link to="/cart" className="text-gray-600 hover:text-gray-900 transition">Carrito</Link>
-              <button onClick={logout} className="text-gray-600 hover:text-gray-900 transition">
+              <Link to="/cart" className="text-gray-300 hover:text-white transition">Carrito</Link>
+              <button onClick={logout} className="text-gray-300 hover:text-white transition">
                 Cerrar Sesión
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-gray-600 hover:text-gray-900 transition">
-                Sign In
-              </Link>
-              <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">
+              <Link to="/login" className="text-gray-300 hover:text-white transition">Sign In</Link>
+              <Link to="/register" className="bg-cyan-600 text-white px-4 py-2 rounded-full hover:bg-cyan-700 transition">
                 Register
               </Link>
             </>

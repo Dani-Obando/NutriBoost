@@ -1,4 +1,6 @@
+// src/pages/Products.jsx
 import { useEffect, useState, useContext } from "react";
+import { useOutletContext } from "react-router-dom";
 import { shopAPI } from "../api/axios";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { CartContext } from "../context/CartContext.jsx";
@@ -16,6 +18,7 @@ const PromotionBanner = () => (
 );
 
 function Products() {
+  const { searchTerm } = useOutletContext();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -57,26 +60,23 @@ function Products() {
     setIsDetailsModalOpen(true);
   };
 
-  // ✅ CORRECCIÓN APLICADA AQUÍ
   const handleAddToCart = (productId, quantity) => {
     if (!user) {
       setIsDetailsModalOpen(false);
       setIsLoginModalOpen(true);
     } else {
-      // Busca el objeto completo del producto en el estado local
       const productToAdd = products.find((p) => p._id === productId);
-
       if (productToAdd) {
-        // Pasa el objeto completo a la función del contexto
         addToCart(productToAdd, quantity);
         setIsDetailsModalOpen(false);
         alert(`Se agregaron ${quantity} unidades de ${productToAdd.nombre} al carrito.`);
-      } else {
-        console.error("No se pudo encontrar el producto para agregar al carrito.");
-        alert("Hubo un error al agregar el producto.");
       }
     }
   };
+  
+  const filteredProducts = products.filter((product) =>
+    product.nombre.toLowerCase().includes((searchTerm || "").toLowerCase())
+  );
 
   if (loading) {
     return <div className="text-center py-12">Cargando productos...</div>;
@@ -86,21 +86,17 @@ function Products() {
     return <div className="text-center py-12 text-red-500">{error}</div>;
   }
 
-  if (products.length === 0) {
-    return <div className="text-center py-12">No se encontraron productos.</div>;
-  }
-
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div>
       <PromotionBanner />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="text-3xl font-bold text-gray-800 mb-8">Productos Destacados</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((p) => (
+          {filteredProducts.map((p) => (
             <button
               key={p._id}
               onClick={() => openDetailsModal(p._id)}
-              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between text-left"
             >
               <div className="p-4 flex-grow flex flex-col">
                 <div className="w-full h-48 flex items-center justify-center mb-4">
@@ -111,19 +107,20 @@ function Products() {
                   />
                 </div>
               </div>
-              <div className="p-4 pt-0 w-full text-left">
-                <h3 className="font-bold text-gray-800 text-lg mb-1">
-                  {p.nombre}
-                </h3>
-                <p className="text-cyan-600 font-extrabold text-xl">
-                  {formatPrice(p.precio)}
-                </p>
+              <div className="p-4 pt-0 w-full">
+                <h3 className="font-bold text-gray-800 text-lg mb-1">{p.nombre}</h3>
+                <p className="text-cyan-600 font-extrabold text-xl">{formatPrice(p.precio)}</p>
               </div>
             </button>
           ))}
         </div>
+        {filteredProducts.length === 0 && !loading && (
+          <div className="text-center py-12 text-gray-600">
+            <p className="text-xl">No se encontraron productos para "{searchTerm}".</p>
+          </div>
+        )}
       </div>
-      
+
       {isDetailsModalOpen && selectedProductId && (
         <ProductDetailsModal
           productId={selectedProductId}
