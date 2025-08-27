@@ -1,4 +1,3 @@
-// src/pages/Checkout.jsx
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from 'react-hot-toast';

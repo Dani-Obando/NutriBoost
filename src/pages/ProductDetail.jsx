@@ -76,7 +76,6 @@ function ProductDetail() {
     <div className="bg-gray-100 min-h-screen py-12 font-sans">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col md:flex-row items-center md:items-start gap-8">
-          {/* Imagen */}
           <div className="flex-shrink-0 w-full md:w-1/2 flex justify-center">
             <img
               src={`http://localhost:5000${product.imagen}`}
@@ -85,7 +84,6 @@ function ProductDetail() {
             />
           </div>
 
-          {/* Info */}
           <div className="flex-grow w-full md:w-1/2">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">{product.nombre}</h1>
             <p className="text-cyan-600 font-extrabold text-3xl mb-4">
@@ -94,8 +92,6 @@ function ProductDetail() {
             <p className="text-gray-600 mb-6 leading-relaxed">
               {product.descripcion}
             </p>
-
-            {/* Cantidad */}
             <div className="flex items-center gap-4 mb-6">
               <span className="font-medium text-gray-700">Cantidad:</span>
               <div className="flex items-center border border-gray-300 rounded-lg">
@@ -120,8 +116,6 @@ function ProductDetail() {
                 </button>
               </div>
             </div>
-
-            {/* Botón */}
             <button
               onClick={handleAddToCart}
               className="w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg hover:bg-cyan-600 transition-colors text-lg"

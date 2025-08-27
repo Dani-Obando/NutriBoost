@@ -1,4 +1,3 @@
-// src/pages/Orders.jsx
 import { useEffect, useState } from "react";
 import { shopAPI } from "../api/axios";
 
@@ -17,8 +16,6 @@ function Orders() {
     const fetchOrders = async () => {
       try {
         const res = await shopAPI.get("/orders");
-        // Para depurar, puedes ver la estructura exacta de tus órdenes aquí:
-        // console.log(res.data); 
         setOrders(res.data);
       } catch (err) {
         console.error("Error obteniendo órdenes", err);
@@ -44,7 +41,6 @@ function Orders() {
                 key={order._id}
                 className="bg-white border rounded-lg p-6 shadow-lg"
               >
-                {/* SECCIÓN 1: RESUMEN DEL PEDIDO */}
                 <div className="flex flex-wrap justify-between items-center mb-4 pb-4 border-b gap-4">
                   <div>
                     <p className="text-sm text-gray-500">ID del Pedido</p>
@@ -52,7 +48,6 @@ function Orders() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Fecha</p>
-                    {/* CORRECCIÓN DE FECHA: Se usa 'createdAt' en lugar de 'fecha' */}
                     <p className="text-gray-800">{new Date(order.createdAt).toLocaleDateString()}</p>
                   </div>
                    <div>
@@ -60,8 +55,6 @@ function Orders() {
                     <p className="font-bold text-xl text-cyan-600">{formatPrice(order.total)}</p>
                   </div>
                 </div>
-
-                {/* SECCIÓN 2: DATOS DEL CLIENTE (NUEVO) */}
                 {order.cliente && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 pb-4 border-b">
                     <div>
@@ -82,8 +75,6 @@ function Orders() {
                     </div>
                   </div>
                 )}
-                
-                {/* SECCIÓN 3: PRODUCTOS DEL PEDIDO */}
                 <h3 className="font-bold text-gray-700 mb-2">Productos:</h3>
                 <ul className="space-y-2">
                   {order.detalles.map((detalle, idx) => (

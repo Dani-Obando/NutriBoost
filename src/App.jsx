@@ -7,9 +7,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Otras rutas */}
         <Route path="/admin" element={<CreateProduct />} />
-        {/* Otras rutas */}
       </Routes>
     </Router>
   );
